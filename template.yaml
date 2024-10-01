@@ -6,7 +6,7 @@ Globals:
 Description: An AWS Serverless Application Model template describing your function.
 Resources:
   CreateTodoFunction:
-    Type: AWS::Serverless::Api
+    Type: AWS::Serverless::Function
     Properties:
       Handler: app.createTodo
       Events:
