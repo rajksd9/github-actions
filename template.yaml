@@ -23,7 +23,7 @@ Resources:
       Runtime: nodejs16.x
       Events:
         GetTodos:
-          Type:Api
+          Type: Api
           Properties:
             Path: /todos/{id}
             Method: GET
