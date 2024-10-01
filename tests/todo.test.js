@@ -1,78 +1,111 @@
-const { handler } = require('../src/lambda');
-const { addTodo, listTodos, deleteTodo } = require('../src/todoManager');
+const lambdaTester = require('lambda-tester');
+const app = require('../src/app'); 
 
-describe('Todo Lambda', () => {
+describe('Todo Lambda API', () => {
 
-  it('create a new todo', async () => {
-    const event = {
-      httpMethod: 'POST',
-      path: '/todos',
-      body: JSON.stringify({ task: 'Test TODO' })
-    };
-
-    const response = await handler(event);
-
-    expect(response.statusCode).toBe(201);
-    const responseBody = JSON.parse(response.body);
-    expect(responseBody).toHaveProperty('id');
-    expect(responseBody.task).toBe('Test TODO');
+  it('should create a new todo', async () => {
+    await lambdaTester(app.handler)
+      .event({
+        httpMethod: 'POST',
+        path: '/todos',
+        body: JSON.stringify({ task: 'Test TODO' })
+      })
+      .expectResolve((result) => {
+        expect(result.statusCode).toBe(201);
+        const responseBody = JSON.parse(result.body);
+        expect(responseBody).toHaveProperty('id');
+        expect(responseBody.task).toBe('Test TODO');
+      });
   });
 
-  it('get a todo by ID', async () => {
-    const todo = addTodo('Another TODO');
+  it('should get a todo by ID', async () => {
+    const postResult = await lambdaTester(app.handler)
+      .event({
+        httpMethod: 'POST',
+        path: '/todos',
+        body: JSON.stringify({ task: 'Another TODO' })
+      })
+      .expectResolve();
 
-    const event = {
-      httpMethod: 'GET',
-      path: `/todos/${todo.id}`,
-      pathParameters: { id: todo.id.toString() }
-    };
+    const postResponseBody = JSON.parse(postResult.body);
+    const todoId = postResponseBody.id;
 
-    const response = await handler(event);
-
-    expect(response.statusCode).toBe(200);
-    const responseBody = JSON.parse(response.body);
-    expect(responseBody).toHaveProperty('id', todo.id);
-    expect(responseBody.task).toBe('Another TODO');
+    await lambdaTester(app.handler)
+      .event({
+        httpMethod: 'GET',
+        path: `/todos/${todoId}`,
+        pathParameters: { id: String(todoId) }
+      })
+      .expectResolve((result) => {
+        expect(result.statusCode).toBe(200);
+        const responseBody = JSON.parse(result.body);
+        expect(responseBody).toHaveProperty('id', todoId);
+        expect(responseBody.task).toBe('Another TODO');
+      });
   });
 
-  it('delete a todo by ID', async () => {
-    const todo = addTodo('TODO to delete');
+  it('should delete a todo by ID', async () => {
+    const postResult = await lambdaTester(app.handler)
+      .event({
+        httpMethod: 'POST',
+        path: '/todos',
+        body: JSON.stringify({ task: 'TODO to delete' })
+      })
+      .expectResolve();
 
-    const deleteEvent = {
-      httpMethod: 'DELETE',
-      path: `/todos/${todo.id}`,
-      pathParameters: { id: todo.id.toString() }
-    };
+    const postResponseBody = JSON.parse(postResult.body);
+    const todoId = postResponseBody.id;
 
-    const deleteResponse = await handler(deleteEvent);
-    expect(deleteResponse.statusCode).toBe(204);
+    await lambdaTester(app.handler)
+      .event({
+        httpMethod: 'DELETE',
+        path: `/todos/${todoId}`,
+        pathParameters: { id: String(todoId) }
+      })
+      .expectResolve((result) => {
+        expect(result.statusCode).toBe(204);
+      });
 
-    const getEvent = {
-      httpMethod: 'GET',
-      path: `/todos/${todo.id}`,
-      pathParameters: { id: todo.id.toString() }
-    };
-
-    const getResponse = await handler(getEvent);
-    expect(getResponse.statusCode).toBe(404);
+    await lambdaTester(app.handler)
+      .event({
+        httpMethod: 'GET',
+        path: `/todos/${todoId}`,
+        pathParameters: { id: String(todoId) }
+      })
+      .expectResolve((result) => {
+        expect(result.statusCode).toBe(404);
+      });
   });
 
-  it('list all todos', async () => {
-    addTodo('TODO 1');
-    addTodo('TODO 2');
+  it('should list all todos', async () => {
+    await lambdaTester(app.handler)
+      .event({
+        httpMethod: 'POST',
+        path: '/todos',
+        body: JSON.stringify({ task: 'TODO 1' })
+      })
+      .expectResolve();
 
-    const event = {
-      httpMethod: 'GET',
-      path: '/todos'
-    };
+    await lambdaTester(app.handler)
+      .event({
+        httpMethod: 'POST',
+        path: '/todos',
+        body: JSON.stringify({ task: 'TODO 2' })
+      })
+      .expectResolve();
 
-    const response = await handler(event);
-
-    expect(response.statusCode).toBe(200);
-    const responseBody = JSON.parse(response.body);
-    expect(responseBody.length).toBe(4);  // Assuming there were already 2 existing todos
-    expect(responseBody[2].task).toBe('TODO 1');
-    expect(responseBody[3].task).toBe('TODO 2');
+    await lambdaTester(app.handler)
+      .event({
+        httpMethod: 'GET',
+        path: '/todos'
+      })
+      .expectResolve((result) => {
+        expect(result.statusCode).toBe(200);
+        const responseBody = JSON.parse(result.body);
+        expect(responseBody.length).toBeGreaterThanOrEqual(2); // Adjust based on previous test data
+        expect(responseBody[responseBody.length - 2].task).toBe('TODO 1');
+        expect(responseBody[responseBody.length - 1].task).toBe('TODO 2');
+      });
   });
 
 });
