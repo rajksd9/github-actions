@@ -2,10 +2,9 @@
   "name": "y",
   "version": "1.0.0",
   "main": "index.js",
-
   "scripts": {
     "start": "node src/app.js",
-    "run":"sam local start-api",
+    "run": "sam local start-api",
     "start-project": "node src/index.js",
     "test": "jest --runInBand --detectOpenHandles --forceExit "
   },
@@ -17,6 +16,7 @@
     "supertest": "^7.0.0"
   },
   "dependencies": {
+    "aws-sdk": "^2.1691.0",
     "express": "^4.19.2"
   }
 }
