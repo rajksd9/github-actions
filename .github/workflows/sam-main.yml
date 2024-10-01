@@ -30,5 +30,41 @@ jobs:
         - name : SAM Deploy
           run: sam  deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name sam-todo --s3-bucket data-b --capabilities CAPABILITY_IAM --region us-east-1
 
-          
-    
+    test:
+        name: Testing
+        needs: [build]
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [16]
+        steps:
+        - name: Checkout
+          uses: actions/checkout@v2
+        - name: Node Setup
+          uses: actions/setup-node@v1
+          with:
+            node-version: ${{matrix.node-version}}
+        - name: Caching NPM packages
+          uses: actions/cache@v3
+          with:
+            path: |
+             ~/.npm
+             node_modules
+            key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+            restore-keys: |
+             ${{ runner.os }}-node- 
+        - name: Setup Dependencies 
+          run: npm install
+        - name: Test the code
+          run: npm test     
+                
+
+        
+
+
+
+
+
+        
+
+

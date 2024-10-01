@@ -1,53 +1,29 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Globals:
-  Function:
-    Runtime: nodejs16.x
-Description: An AWS Serverless Application Model template describing your function.
 Resources:
-  CreateTodoFunction:
+  TodoFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: app.createTodo
+      Handler: app.handler
+      Runtime: nodejs14.x
       Events:
-        CreateTodo:
+        CreateTodoApi:
           Type: Api
           Properties:
             Path: /todos
-            Method: POST
-  
-  GetTodosFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: app.getTodos
-      Runtime: nodejs16.x
-      Events:
-        GetTodos:
+            Method: post
+        GetTodosApi:
+          Type: Api
+          Properties:
+            Path: /todos
+            Method: get
+        GetTodoApi:
           Type: Api
           Properties:
             Path: /todos/{id}
-            Method: GET
-
-  DeleteTodosFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: app.deleteTodos
-      Runtime: nodejs16.x
-      Events:
-        DeleteTodos:
+            Method: get
+        DeleteTodoApi:
           Type: Api
           Properties:
             Path: /todos/{id}
-            Method: DELETE
-          
-  ListTodosFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: app.listTodos
-      Runtime: nodejs16.x
-      Events:
-        ListTodos:
-          Type: Api
-          Properties:
-            Path: /todos/list
-            Method: GET
+            Method: delete

@@ -1,67 +1,78 @@
-const request = require ('supertest');
-const  app = require ('../src/app.js');
+const { handler } = require('../src/lambda');
+const { addTodo, listTodos, deleteTodo } = require('../src/todoManager');
 
-describe('Todo API', () => {
-  it('should create a new todo', async () => {
-    const response = await request(app)
-      .post('/todos')
-      .send({ task: 'Test TODO' })
-      .expect(201);
-    
-    expect(response.body).toHaveProperty('id');
-    expect(response.body.task).toBe('Test TODO');
+describe('Todo Lambda', () => {
 
+  it('create a new todo', async () => {
+    const event = {
+      httpMethod: 'POST',
+      path: '/todos',
+      body: JSON.stringify({ task: 'Test TODO' })
+    };
+
+    const response = await handler(event);
+
+    expect(response.statusCode).toBe(201);
+    const responseBody = JSON.parse(response.body);
+    expect(responseBody).toHaveProperty('id');
+    expect(responseBody.task).toBe('Test TODO');
   });
 
-  it('should get a todo by ID', async () => {
-    const postResponse = await request(app)
-      .post('/todos')
-      .send({ task: 'Another TODO' })
-      .expect(201);
+  it('get a todo by ID', async () => {
+    const todo = addTodo('Another TODO');
 
-    const todoId = postResponse.body.id;
+    const event = {
+      httpMethod: 'GET',
+      path: `/todos/${todo.id}`,
+      pathParameters: { id: todo.id.toString() }
+    };
 
-    const getResponse = await request(app)
-      .get(`/todos/${todoId}`)
-      .expect(200);
-    
-    expect(getResponse.body).toHaveProperty('id', todoId);
-    expect(getResponse.body.task).toBe('Another TODO');
+    const response = await handler(event);
+
+    expect(response.statusCode).toBe(200);
+    const responseBody = JSON.parse(response.body);
+    expect(responseBody).toHaveProperty('id', todo.id);
+    expect(responseBody.task).toBe('Another TODO');
   });
 
-  it('should delete a todo by ID', async () => {
-    const postResponse = await request(app)
-      .post('/todos')
-      .send({ task: 'TODO to delete' })
-      .expect(201);
+  it('delete a todo by ID', async () => {
+    const todo = addTodo('TODO to delete');
 
-    const todoId = postResponse.body.id;
+    const deleteEvent = {
+      httpMethod: 'DELETE',
+      path: `/todos/${todo.id}`,
+      pathParameters: { id: todo.id.toString() }
+    };
 
-    await request(app)
-      .delete(`/todos/${todoId}`)
-      .expect(204);
+    const deleteResponse = await handler(deleteEvent);
+    expect(deleteResponse.statusCode).toBe(204);
 
-    await request(app)
-      .get(`/todos/${todoId}`)
-      .expect(404);
+    const getEvent = {
+      httpMethod: 'GET',
+      path: `/todos/${todo.id}`,
+      pathParameters: { id: todo.id.toString() }
+    };
+
+    const getResponse = await handler(getEvent);
+    expect(getResponse.statusCode).toBe(404);
   });
 
-  it('should list all todos', async () => {
-    await request(app)
-      .post('/todos')
-      .send({ task: 'TODO 1' })
-      .expect(201);
-    await request(app)
-      .post('/todos')
-      .send({ task: 'TODO 2' })
-      .expect(201);
+  it('list all todos', async () => {
+    addTodo('TODO 1');
+    addTodo('TODO 2');
 
-    const response = await request(app)
-      .get('/todos')
-      .expect(200);
+    const event = {
+      httpMethod: 'GET',
+      path: '/todos'
+    };
 
-    expect(response.body.length).toBe(4);
-    expect(response.body[2].task).toBe('TODO 1');
-    expect(response.body[3].task).toBe('TODO 2');
+    const response = await handler(event);
+
+    expect(response.statusCode).toBe(200);
+    const responseBody = JSON.parse(response.body);
+    expect(responseBody.length).toBe(4);  // Assuming there were already 2 existing todos
+    expect(responseBody[2].task).toBe('TODO 1');
+    expect(responseBody[3].task).toBe('TODO 2');
   });
+
 });
