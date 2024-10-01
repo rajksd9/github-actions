@@ -29,7 +29,7 @@ Resources:
             Method: GET
 
   DeleteTodosFunction:
-   Type: AWS::Serverless::Function
+    Type: AWS::Serverless::Function
     Properties:
       Handler: app.deleteTodos
       Runtime: nodejs16.x
@@ -41,7 +41,7 @@ Resources:
             Method: DELETE
           
   ListTodosFunction:
-   Type: AWS::Serverless::Function
+    Type: AWS::Serverless::Function
     Properties:
       Handler: app.listTodos
       Runtime: nodejs16.x
