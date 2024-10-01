@@ -28,7 +28,7 @@ jobs:
         - name : SAM Build
           run: sam build
         - name : SAM Deploy
-          run: sam  deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name sam-todo --s3-bucket s3-bucket-d --capabilities CAPABILITY_IAM --region us-east-1
+          run: sam  deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name sam-todo --s3-bucket data-b --capabilities CAPABILITY_IAM --region us-east-1
 
           
     
