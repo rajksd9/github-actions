@@ -27,3 +27,5 @@ Resources:
           Properties:
             Path: /todos/{id}
             Method: delete
+  Policies:
+    - AWSLambdaBasicExecutionRole
