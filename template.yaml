@@ -5,7 +5,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: app.handler
-      Runtime: nodejs14.x
+      Runtime: nodejs16.x
       Events:
         CreateTodoApi:
           Type: Api
