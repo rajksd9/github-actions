@@ -8,7 +8,7 @@ Resources:
       Runtime: nodejs16.x
       Timeout: 900
       FunctionName: !Sub 'TodoFunction-${AWS::StackName}'
-      CodeUri: './Function_Code_path/'
+      CodeUri: './lambda/'
       Policies:
         - Statement:
             - Effect: Allow

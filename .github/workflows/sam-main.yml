@@ -34,16 +34,29 @@ jobs:
           aws-region: us-east-1
       
       - name: SAM Build
-        run: sam build --use-container
+        run: sam build --template-file ./template.yaml 
+
+    
       
       - name: Save build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: sam-artifacts
-          path: .aws-sam/build/
+          path: .aws-sam
+  package:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps: 
+      - name: package
+        run : sam package --template-file ./.aws-sam/build/template.yaml --s3-bucket data-b --output-template-file ./Template-packaged.yml
 
-      - name: SAM Deploy
-        run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name sam-todo --s3-bucket data-b --capabilities CAPABILITY_IAM --region us-east-1
+  deploy:
+    name: SAM Deploy
+    needs: [package]
+    runs-on: ubuntu-latest
+    steps:
+      - name: deploy
+        run: sam deploy --no-fail-on-empty-changeset --stack-name sam-todo --template-file ./Template-packaged.yml --capabilities CAPABILITY_IAM --region us-east-1
 
   test:
     name: Testing
@@ -78,7 +91,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: sam-artifacts
-          path: .aws-sam/build/
+          path: .aws-sam
 
       - name: Test the code
         run: npm test
