@@ -9,7 +9,7 @@ Resources:
       Timeout: 900000
       Policies: 
         - AWSLambdaBasicExecutionRole
-        - Policy Name: Log Basics
+        - Policy Name: Cloudwatch Logging
         - Policy Document:
             Version: '2012-10-17'
             Statement: 
