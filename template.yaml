@@ -6,17 +6,7 @@ Resources:
     Properties:
       Handler: app.handler
       Runtime: nodejs16.x
-      Role: !GetAtt LambdaFunctionExecutionRole.Arn  
-  LambdaFunctionExecutionRole:
-    Type: AWS::IAM::Role
-    Properties: 
-      AssumeRolePolicyDocument: 
-        Version: '2012-10-17'
-        Statement: 
-          - Effect: Allow 
-            Principal: 
-              Service: lambda.amazonaws.com
-            Action: sts:AssumeRole
+      Timeout: 900000
       Policies: 
         - PolicyName: LambdaBasicExecutionPolicy
           PolicyDocument: 
@@ -27,3 +17,5 @@ Resources:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                 Resource: '*'
+
+
