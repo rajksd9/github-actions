@@ -6,17 +6,15 @@ Resources:
     Properties:
       Handler: app.handler
       Runtime: nodejs16.x
-      Timeout: 900000
-      Policies: 
+      Timeout: 900
+      Policies:
         - AWSLambdaBasicExecutionRole
-        - Policy Name: Cloudwatch Logging
-        - Policy Document:
+        - PolicyDocument:
             Version: '2012-10-17'
-            Statement: 
+            Statement:
               - Effect: Allow
-                Action: 
+                Action:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
+                  - logs:PutLogEvents
                 Resource: '*'
-
-
