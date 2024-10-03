@@ -8,14 +8,5 @@ Resources:
       Runtime: nodejs16.x
       Timeout: 900000
       Policies: 
-        - PolicyName: LambdaBasicExecutionPolicy
-          PolicyDocument: 
-            Version: '2012-10-17'
-            Statement: 
-              - Effect: Allow
-                Action: 
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                Resource: '*'
-
+        - CloudWatchPutMetricPolicy: {}
 
