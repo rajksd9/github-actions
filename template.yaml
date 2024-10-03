@@ -8,6 +8,8 @@ Resources:
       Handler: app.handler
       Runtime: nodejs16.x
       Timeout: 900
+      FunctionName: ''
+      CodeUri: ''
       Policies:
         - PolicyName: TodoFunctionPolicy
           PolicyDocument:
