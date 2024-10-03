@@ -6,14 +6,14 @@ Resources:
     Properties:
       Handler: app.handler
       Runtime: nodejs16.x
-      Role: !GetAtt LambdaExecutionRole.Arn  
-  LambdaExecutionRole:
+      Role: !GetAtt LambdaFunctionExecutionRole.Arn  
+  LambdaFunctionExecutionRole:
     Type: AWS::IAM::Role
     Properties: 
       AssumeRolePolicyDocument: 
         Version: '2012-10-17'
         Statement: 
-          - Effect: Allow
+          - Effect: Allow 
             Principal: 
               Service: lambda.amazonaws.com
             Action: sts:AssumeRole
@@ -26,5 +26,4 @@ Resources:
                 Action: 
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: arn:aws:logs:*:*:*
+                Resource: '*'
