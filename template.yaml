@@ -6,26 +6,25 @@ Resources:
     Properties:
       Handler: app.handler
       Runtime: nodejs16.x
-      Events:
-        CreateTodoApi:
-          Type: Api
-          Properties:
-            Path: /todos
-            Method: post
-        GetTodosApi:
-          Type: Api
-          Properties:
-            Path: /todos
-            Method: get
-        GetTodoApi:
-          Type: Api
-          Properties:
-            Path: /todos/{id}
-            Method: get
-        DeleteTodoApi:
-          Type: Api
-          Properties:
-            Path: /todos/{id}
-            Method: delete
-  Policies:
-    - AWSLambdaBasicExecutionRole
+      Role: !GetAtt LambdaExecutionRole.Arn  
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties: 
+      AssumeRolePolicyDocument: 
+        Version: '2012-10-17'
+        Statement: 
+          - Effect: Allow
+            Principal: 
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies: 
+        - PolicyName: LambdaBasicExecutionPolicy
+          PolicyDocument: 
+            Version: '2012-10-17'
+            Statement: 
+              - Effect: Allow
+                Action: 
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: arn:aws:logs:*:*:*
