@@ -1,5 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
+
 Resources:
   TodoFunction:
     Type: AWS::Serverless::Function
@@ -8,8 +9,8 @@ Resources:
       Runtime: nodejs16.x
       Timeout: 900
       Policies:
-        - AWSLambdaBasicExecutionRole
-        - PolicyDocument:
+        - PolicyName: TodoFunctionPolicy
+          PolicyDocument:
             Version: '2012-10-17'
             Statement:
               - Effect: Allow
