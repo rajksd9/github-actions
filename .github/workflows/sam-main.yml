@@ -54,11 +54,7 @@ jobs:
     steps:
       - name: Check contents of root directory
         run: ls -la ./
-      - name: Check contents of aws sam directory
-        run: ls -la ./.aws-sam
-      - name: Check contents of build directory
-        run: ls -la ./.aws-sam/build/
-         
+
       - name: package
         run : sam package --template-file ./.aws-sam/build/template.yaml --s3-bucket data-b --output-template-file ./Template-packaged.yml
 
