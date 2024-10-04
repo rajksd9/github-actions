@@ -39,6 +39,7 @@ jobs:
       - name: Check contents of build directory
         run: ls -la ${{ github.workspace }}/.aws-sam/build/
 
+      # Upload build artifacts
       - name: Save build artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -51,18 +52,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      
+
+      # Download build artifacts
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: sam-artifacts
           path: ./.aws-sam
 
-      - name: List build directory contents
+      - name: List build directory contents after download
         run: ls -la ./.aws-sam/build/
 
       - name: Package SAM Application with Debugging
         run: sam package --template-file ./.aws-sam/build/template.yaml --s3-bucket data-b --output-template-file ./Template-packaged.yml --debug
+
 
       - name: Check for Packaged Template
         run: ls -la ./Template-packaged.yaml
