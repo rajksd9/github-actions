@@ -35,6 +35,9 @@ jobs:
       
       - name: SAM Build
         run: sam build --template-file ./template.yaml 
+      - name: List SAM Build Directory
+        run: ls -la ./.aws-sam/build
+      
 
     
       
@@ -48,9 +51,9 @@ jobs:
     runs-on: ubuntu-latest
     steps: 
       - name: package
-        run: sam package --template-file ./.aws-sam/build/template.yaml --s3-bucket data-b --output-template-file ./Template-packaged.yml
+        run: sam package --template-file ./.aws-sam/build/template.yaml --s3-bucket data-b --output-template-file ./Template-packaged.yaml
       - name: Check for Packaged Template
-        run: ls -la ./Template-packaged.yml
+        run: ls -la ./Template-packaged.yaml
 
   deploy:
     name: SAM Deploy
@@ -58,11 +61,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: deploy
-        run: sam deploy --no-fail-on-empty-changeset --stack-name sam-todo --template-file ./Template-packaged.yml --capabilities CAPABILITY_IAM --region us-east-1
+        run: sam deploy --no-fail-on-empty-changeset --stack-name sam-todo --template-file ./Template-packaged.yaml --capabilities CAPABILITY_IAM --region us-east-1
 
   test:
     name: Testing
-    needs: [build]
+    needs: [deploy]
     runs-on: ubuntu-latest
     strategy:
       matrix:
