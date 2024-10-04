@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     steps: 
       - name: package
-        run: sam package --template-file ./.aws-sam/build/template.yaml --s3-bucket data-b --output-template-file ./Template-packaged.yaml
+        run: sam package --template-file ./.aws-sam/build/template.yaml --s3-bucket data-b --output-template-file ./Template-packaged.yaml --debug
       - name: Check for Packaged Template
         run: ls -la ./Template-packaged.yaml
 
