@@ -1,4 +1,5 @@
 name: sam-node-project
+
 on:
   push:
     branches:
@@ -6,7 +7,6 @@ on:
 
 jobs:
   build:
-    name: Initial Setup and Code Build
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -23,7 +23,7 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Sam Setup
+      - name: SAM Setup
         uses: aws-actions/setup-sam@v1
       
       - name: AWS Config Setup
@@ -34,27 +34,36 @@ jobs:
           aws-region: us-east-1
       
       - name: SAM Build
-        run: sam build --template-file ./template.yaml 
-      - name: List SAM Build Directory
-        run: ls -la ./.aws-sam/build
-      
+        run: sam build --template-file ${{ github.workspace }}/template.yaml
 
-    
-      
+      - name: Check contents of build directory
+        run: ls -la ${{ github.workspace }}/.aws-sam/build/
+
       - name: Save build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: sam-artifacts
           path: .aws-sam
+
   package:
     needs: [build]
     runs-on: ubuntu-latest
     steps:
-      - name: List contents of build directory
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: sam-artifacts
+          path: ./.aws-sam
+
+      - name: List build directory contents
         run: ls -la ./.aws-sam/build/
- 
-      - name: package
-        run: sam package --template-file ./.aws-sam/build/template.yaml --s3-bucket data-b --output-template-file ./Template-packaged.yaml --debug
+
+      - name: Package SAM Application with Debugging
+        run: sam package --template-file ./.aws-sam/build/template.yaml --s3-bucket data-b --output-template-file ./Template-packaged.yml --debug
+
       - name: Check for Packaged Template
         run: ls -la ./Template-packaged.yaml
 
