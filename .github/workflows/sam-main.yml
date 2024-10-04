@@ -47,7 +47,7 @@ jobs:
           name: sam-artifacts
           path: .aws-sam/build
   list-artifact:
-    needs: build  
+    needs: [build]  
     runs-on: ubuntu-latest
     steps:
       - name: Download build artifacts
