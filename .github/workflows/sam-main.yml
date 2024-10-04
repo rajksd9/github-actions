@@ -35,7 +35,8 @@ jobs:
       
       - name: SAM Build
         run: sam build --template-file ./template.yaml
-
+      - name: Check contents of root directory
+        run: ls -la ./
       - name: Check contents of build directory
         run: ls -la ./.aws-sam/build/
 
