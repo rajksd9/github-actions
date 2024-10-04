@@ -46,5 +46,58 @@ jobs:
         with:
           name: sam-artifacts
           path: .aws-sam/build
+  package:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps: 
+      - name: package
+        run : sam package --template-file ./.aws-sam/build/TodoFunction/template.yaml --s3-bucket data-b --output-template-file ./Template-packaged.yml
+
+  deploy:
+    name: SAM Deploy
+    needs: [package]
+    runs-on: ubuntu-latest
+    steps:
+      - name: deploy
+        run: sam deploy --no-fail-on-empty-changeset --stack-name sam-todo --template-file ./Template-packaged.yml --capabilities CAPABILITY_IAM --region us-east-1
+
+  test:
+    name: Testing
+    needs: [build]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Node Setup
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      
+      - name: Restore NPM cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Setup Dependencies 
+        run: npm install
+      
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: sam-artifacts
+          path: .aws-sam
+
+      - name: Test the code
+        run: npm test
+
 
   
