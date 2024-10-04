@@ -63,7 +63,7 @@ jobs:
 
   test:
     name: Testing
-    needs: [build]
+    needs: [deploy]
     runs-on: ubuntu-latest
     strategy:
       matrix:
