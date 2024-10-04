@@ -49,7 +49,10 @@ jobs:
   package:
     needs: [build]
     runs-on: ubuntu-latest
-    steps: 
+    steps:
+      - name: List contents of build directory
+        run: ls -la ./.aws-sam/build/
+ 
       - name: package
         run: sam package --template-file ./.aws-sam/build/template.yaml --s3-bucket data-b --output-template-file ./Template-packaged.yaml --debug
       - name: Check for Packaged Template
